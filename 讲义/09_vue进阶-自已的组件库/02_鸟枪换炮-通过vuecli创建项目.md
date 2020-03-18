@@ -10,8 +10,6 @@
 
 ## 使用脚手架工具创建项目
 
-
-
 命令：
 
 ```bash
@@ -20,8 +18,9 @@ vue create XXXXX
 
 要点：
 
-- Babel + Router + Linter/Formatter
-- 
+- 在Babel + Router + Linter/Formatter
+
+  
 
 ```
 Vue CLI v3.11.0
@@ -71,10 +70,10 @@ Vue CLI v3.11.0
 ### 调整明细
 
 ```
-|-docs (额外添加的)
-|-examples(把src改成这个）
-|-packages(额外添加的)
-
+|-docs (额外添加的)       组件使用手册。用来保存对组件的说明 
+|-packages(额外添加的)    所有的组件放在这里。
+|-examples(把src改成这个） 主要是方便我们理解。examples下的内容是来测试
+packages下的组件的使用
 ```
 
 ### 设置vue.config.js 
