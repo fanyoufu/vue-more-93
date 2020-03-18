@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  
+  <div style="border:1px solid #ccc;box-shadow:3px 3px 3px #000;background-color:#fff;width:600px;margin:50px auto;padding: 20px;">
+    <h1>从数据到视图的变化</h1>
+    <h2>在控制台中修改属性的值，则页面上的内容也会变化</h2>
+    <div>
+      <p id="p1"></p>
+    </div>
+  </div>  
+    <script>
+        const obj = {}
+        
+        Object.defineProperty(obj,"name",{
+          get(){
+            return "hello"
+          },
+          set(val){
+            // 拦截到了对name属性的设置
+            document.getElementById("p1").innerHTML = val
+          }
+        })
+        console.log("本例通过defineProperty实现了：数据到视图的变化")
+        console.log("请通过obj.name=value的格式来重新来给obj的name赋值，并观察视图的变化")
+
+        obj.name = "hi"
+        console.log("输出obj.name:",obj.name);
+    </script>
+</body>
+</html>

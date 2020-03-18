@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创建并使用button组件</title>
+  <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <my-button></my-button>
+    <my-headline></my-headline>
+    <hr>
+  </div>
+  <script>
+    var MyButton = {
+        name:"MyButton",
+        template:"<div><button>全局组件：按钮</button></div>"
+    }
+    var MyHeadline = {
+        name:"MyHeadline",
+        template:"<div>全局组件:标题</div>"
+    }
+    var obj = {
+      install (vue) {
+        vue.component(MyButton.name,MyButton)
+        vue.component(MyHeadline.name,MyHeadline)
+      }
+    }
+    Vue.use(obj)
+    Vue.use(obj)
+    Vue.use(obj)
+
+    new Vue({
+      el:"#app"
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创建并使用button组件</title>
+  <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    
+  </div>
+  <script>
+    var MyButton = {
+        name:"MyButton",
+        template:`
+          <div>
+            <button @click='hClick'>组件：按钮{{a}}-{{b}}
+            </button>
+          </div>`,
+        props:{
+          b:{type:Number}
+        },
+        data(){
+          return {
+            a:2000
+          }
+        }
+    }
+    var M = Vue.extend(MyButton);
+    var m1 = new M({
+      propsData:{
+        b:100
+      },
+      data(){
+        return {a:1}
+      },
+      methods: {
+        hClick(){
+          this.a++
+          console.log(this.a,this.b)
+        }
+      },
+    });
+    m1.$mount('#app')
+  </script>
+</body>
+</html>
