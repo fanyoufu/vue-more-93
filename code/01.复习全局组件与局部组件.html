@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{a}}
+        <hr>
+        <my-button></my-button>
+        <hr>
+        <my-h1></my-h1>
+    </div>
+
+    <div id="app2">
+        <my-button></my-button>
+        <hr>
+        <my-h1></my-h1>
+    </div>
+
+    <script>
+        // 局部组件
+        const MyButton = {
+            template:`<button>
+                局部组件{{title}}
+            </button>`,
+            data(){
+                return {
+                    title:'test'
+                }
+            }
+        }
+
+        // 注册全局组件
+        Vue.component('MyH1',{
+            template:"<h1>{{title}}</h1>",
+            data(){
+                return {
+                    title:'标题123'
+                }
+            }
+        })
+
+
+
+        new Vue({
+            el:'#app',
+            data:{
+                a:"helloworld"
+            },
+            components:{
+                MyButton
+            }
+        })
+
+        new Vue({
+            el:'#app2'
+        })
+    </script>
+</body>
+</html>

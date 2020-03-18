@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <my-button></my-button>
+        <hr>
+        <my-h1></my-h1>
+    </div>
+
+    <div id="app2">
+        <hr>
+        <my-h1></my-h1>
+        <my-button></my-button>
+    </div>
+
+    <script>
+        // Vue插件
+        const Test = {
+            install(Vue) {
+                alert(1)
+                // 注册
+                // Vue.filter('my-filter', function (value) {
+                // // 返回处理后的值
+                // })
+            }
+        }
+
+        // Vue插件
+        // 因为它有一个install方法
+        const MyButton = {
+            name:"MyButton",
+            template:`<button>
+                按钮{{title}}
+            </button>`,
+            data(){
+                return {
+                    title:'test'
+                }
+            },
+
+            install(Vue){
+                Vue.component('MyButton',MyButton)
+            }
+        }
+
+        // 定义一个对象
+        var MyH1 = {
+            template:"<h1>{{title}}</h1>",
+            data(){
+                return {
+                    title:'标题1234567'
+                }
+            },
+
+            install(Vue){
+                console.log(Vue)
+                // 注册一个全局组件
+                Vue.component("MyH1",MyH1)
+            }
+        }
+        // Vue.component("MyH1",MyH1)
+
+        // 调用Vue.use()方法，注册全局组件
+        // 因为在MyH1对象中有一个install方法
+        Vue.use(MyH1)
+        Vue.use(MyButton)
+
+        Vue.use(Test)
+
+
+        new Vue({
+            el:'#app',
+           
+        })
+
+        new Vue({
+            el:'#app2'
+        })
+    </script>
+</body>
+</html>
