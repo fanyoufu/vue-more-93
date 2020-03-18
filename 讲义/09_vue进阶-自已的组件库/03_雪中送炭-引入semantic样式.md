@@ -10,15 +10,25 @@
 
 ## 引入并安装 semantic
 
+- semantic
+
+- bootstrap
+
 ### npm i
 
 在我们的项目中，我们只需要样式，而不需要.js代码，所以我们直接去安装semantic-ui-css。
 
 https://www.npmjs.com/package/semantic-ui-css
 
+```
+npm i semantic-ui-css
+```
+
 
 
 ### 在packages中引入css样式
+
+index.js中，引入样式
 
 ```
 import 'semantic-ui-css/semantic.css'
@@ -80,10 +90,8 @@ export default {
 ![image-20200316200931550](asset/image-20200316200931550.png)
 
 ```html
-<div>
-    <button class="ui button">
-        <slot>我是一个按钮</slot>
-    </button>
+<div class="ui button">
+   <slot>我是默认内容</slot>
 </div>
 ```
 
@@ -124,7 +132,7 @@ export default {
 ```
 <template>
   <div>
-    <button class="ui button" :class="cSize">
+    <button class="ui button" :class="size">
       <slot>我是一个按钮</slot>
     </button>
   </div>
@@ -136,26 +144,23 @@ export default {
   props: {
     size: {
       type: String,
-      required: false,
-      default: 'small',
+      default: 'medium',
       validator (val) {
+        // 只要传入 size属性，就会
+        // 进入到这个函数中，
+        // 如返回true,则表示生效。
+        // 如返回false，则表示不允许
+
+        // 检验思路：
+        // 如果传入的size是：mini,medium,huge,massive.... 就ok
+        // 否则就返回false
+        console.log(val)
+        // includes检查这个数组中，是否包含这个元素。
         return ['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'].includes(val)
       }
     }
-  },
-  data () {
-    return {
-      // size: this.size
-    }
-  },
-  computed: {
-    cSize () {
-      return this.size
-    }
   }
 }
-</script>
-
 ```
 
 在设置prop时，有一点要注意:
@@ -217,11 +222,10 @@ https://semantic-ui.com/elements/icon.html
 
 ```
 <template>
-  <div>
-    <button class="ui button" :class="cSize">
-      <i v-if='icon' class="icon" :class="cIcon"></i>
-      <slot>我是一个按钮</slot>
-    </button>
+  <div class="ui button" :class="size">
+    <!-- 如果用户设置了icon属性，则显示图标 -->
+    <i v-if="icon" class="icon" :class="icon"></i>
+     <slot>我是默认内容</slot>
   </div>
 </template>
 
@@ -231,39 +235,27 @@ export default {
   props: {
     size: {
       type: String,
-      required: false,
-      default: 'small',
+      default: 'medium',
       validator (val) {
+        // 只要传入 size属性，就会
+        // 进入到这个函数中，
+        // 如返回true,则表示生效。
+        // 如返回false，则表示不允许
+
+        // 检验思路：
+        // 如果传入的size是：mini,medium,huge,massive.... 就ok
+        // 否则就返回false
+        // console.log(val)
+        // includes检查这个数组中，是否包含这个元素。
         return ['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'].includes(val)
       }
     },
     icon: {
       type: String,
-      required: false,
-      default: ''
-    }
-  },
-  computed: {
-    cClass () {
-      return [
-        this.cSize,
-        this.cIcon
-      ].join(' ')
-    },
-    cSize () {
-      return this.size
-    },
-    cIcon () {
-      if (this.icon) {
-        return this.icon
-      } else {
-        return ''
-      }
+      required: false
     }
   }
 }
-</script>
-
 ```
 
 ### 测试用例
@@ -272,6 +264,9 @@ export default {
 <my-button  icon="user">icon为user的按钮</my-button>
 <br>
 <my-button  icon="history">icon为history的按钮</my-button>
+ <br>
+<my-button size="massive" icon="warning circle">warning circle</my-button>
+
 ```
 
 
@@ -288,34 +283,63 @@ export default {
 
 ```
 <template>
-  <div>
-    <button class="ui button" :class="cClass">
-      <i v-if='icon' class="icon" :class="cIcon"></i>
-      <slot>我是一个按钮</slot>
-    </button>
+  <!-- slot:插槽。 -->
+  <div class="ui button" :class="cClass">
+    <!-- 如果用户设置了icon属性，则显示图标 -->
+    <i v-if="icon" class="icon" :class="icon"></i>
+     <slot>我是默认内容</slot>
   </div>
+  <!-- <div class="ui animated fade button">
+    <div class="visible content">Sign-up for a Pro account</div>
+    <div class="hidden content">
+      $12.99 a month
+    </div>
+  </div> -->
 </template>
 
 <script>
 export default {
   name: 'MyButton',
   props: {
-    // ... 省略其它
+    size: {
+      type: String,
+      default: 'medium',
+      validator (val) {
+        // 只要传入 size属性，就会
+        // 进入到这个函数中，
+        // 如返回true,则表示生效。
+        // 如返回false，则表示不允许
+
+        // 检验思路：
+        // 如果传入的size是：mini,medium,huge,massive.... 就ok
+        // 否则就返回false
+        // console.log(val)
+        // includes检查这个数组中，是否包含这个元素。
+        return ['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'].includes(val)
+      }
+    },
+    icon: {
+      type: String,
+      required: false
+    },
     disabled: {
       type: Boolean,
-      required: false,
+      // 默认 不是 禁用状态
       default: false
     }
   },
   computed: {
     cClass () {
-      return [
-        this.cSize,
-        this.cDisabled
-      ].join(' ')
-    },
-    cDisabled () {
-      return this.disabled ? 'disabled' : ''
+      // 收集收到的属性值，并分析一下
+      // 返回class给按钮外层容器
+      if (this.disabled) {
+        // 用户开启禁用
+        // disabled 是semantic-ui中一个特殊的class类名。
+        // 这里就会有两个类名，所以加空格
+        return this.size + ' ' + 'disabled'
+      } else {
+        return this.size
+      }
     }
   }
 }
@@ -328,11 +352,16 @@ export default {
 ### 测试用例
 
 ```
-  <my-button  icon="history" :disabled="mDisabled">icon为history的按钮</my-button>
-    <br>
-    <my-button  icon="history" :disabled="false">icon为history的没有禁用按钮</my-button>
-    <br>
-    <my-button  icon="history" disabled>icon为history的禁用按钮</my-button>
+<my-button size="massive">哈哈哈大按钮</my-button>
+<br>
+<br>
+<my-button disabled size="massive" icon="warning circle">warning circle</my-button>
+<br>
+<br>
+
+<br>
+<my-button disabled size="massive" icon="wifi">信息好的很</my-button>
+<br>
 ```
 
 
@@ -365,27 +394,66 @@ export default {
 export default {
   name: 'MyButton',
   props: {
-    // ... 省略其它
+    size: {
+      type: String,
+      default: 'medium',
+      validator (val) {
+        // 只要传入 size属性，就会
+        // 进入到这个函数中，
+        // 如返回true,则表示生效。
+        // 如返回false，则表示不允许
+
+        // 检验思路：
+        // 如果传入的size是：mini,medium,huge,massive.... 就ok
+        // 否则就返回false
+        // console.log(val)
+        // includes检查这个数组中，是否包含这个元素。
+        return ['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'].includes(val)
+      }
+    },
+    icon: {
+      type: String,
+      required: false
+    },
+    disabled: {
+      type: Boolean,
+      // 默认 不是 禁用状态
+      default: false
+    },
     loading: {
       type: Boolean,
-      required: false,
+      // 默认 不要启用loading状态
       default: false
     }
   },
   computed: {
     cClass () {
-      return [
-        this.cSize,
-        this.cDisabled,
-        this.cLoading
-      ].join(' ')
+      var classArr = [this.size]
+
+      this.loading && classArr.push('loading')
+      this.disabled && classArr.push('disabled')
+
+      return classArr.join(' ')
     },
-    cLoading () {
-      return this.loading ? 'loading' : ''
-    }
+    // cClass () {
+    //   // 1. 用数组收集类名
+    //   var classArr = [this.size]
+    //   // 收集收到的属性值，并分析一下
+    //   // 返回class给按钮外层容器
+    // if (this.loading) {
+    //   // 如果是Loading状态，则要添加一个loading类
+    //   classArr.push('loading')
+    // }
+    //   if (this.disabled) {
+    //     // 用户开启禁用
+    //     // disabled 是semantic-ui中一个特殊的class类名。
+    //     classArr.push('disabled')
+    //   }
+    //   // ['mini','loading','disabled'] ==>"mini loading disabled"
+    //   return classArr.join(' ')
+    // }
   }
 }
-</script>
 
 ```
 
@@ -395,7 +463,7 @@ export default {
 
 ```
 <br>
-    <my-button  icon="history" :loading="false">icon为history的loading按钮</my-button>
+    <my-button  icon="history" loading>icon为history的loading按钮</my-button>
 ```
 
 
@@ -427,32 +495,59 @@ export default {
 ### 修改组件代码
 
 ```
-props: {
-  animated: {
-      type: [String, Boolean],
-      required: false,
+export default {
+  name: 'MyButton',
+  props: {
+    size: {
+      type: String,
+      default: 'medium',
+      validator (val) {
+        // 只要传入 size属性，就会
+        // 进入到这个函数中，
+        // 如返回true,则表示生效。
+        // 如返回false，则表示不允许
+
+        // 检验思路：
+        // 如果传入的size是：mini,medium,huge,massive.... 就ok
+        // 否则就返回false
+        // console.log(val)
+        // includes检查这个数组中，是否包含这个元素。
+        return ['mini', 'tiny', 'small', 'medium', 'large', 'big', 'huge', 'massive'].includes(val)
+      }
+    },
+    icon: {
+      type: String,
+      required: false
+    },
+    disabled: {
+      type: Boolean,
+      // 默认 不是 禁用状态
+      default: false
+    },
+    loading: {
+      type: Boolean,
+      // 默认 不要启用loading状态
+      default: false
+    },
+    animated: {
+      type: String,
       default: ''
     }
-  }
-
+  },
   computed: {
     cClass () {
-      return [
-        this.cSize,
-        this.cIcon,
-        this.cDisabled,
-        this.cLoading,
-        this.cAnimated
-      ].join(' ')
-    },
-    cAnimated () {
-      if (typeof this.animated === 'boolean') {
-        return this.animated ? 'animated' : ''
-      } else {
-        return this.animated ? this.animated + ' animated' : ''
-      }
+      var classArr = [this.size]
+      // 当前用户是否启用动画
+      // 如果启用了动画，要添加两个类 : animated 动画的名字
+      this.animated && classArr.push(`animated ${this.animated}`)
+      this.loading && classArr.push('loading')
+      this.disabled && classArr.push('disabled')
+
+      return classArr.join(' ')
     }
+  }
 }
+</script>
 ```
 
 
@@ -460,20 +555,30 @@ props: {
 模板
 
 ```html
-<div class="ui button" :class="cClass">
-    <template v-if="cAnimated">
-        <div v-if="$slots.hidden"  class="hidden content">
-            <slot name="hidden"/>
-        </div>
-        <div v-if="$slots.visible"  class="visible content">
-            <slot name="visible"/>
-        </div>
+<template>
+  <!-- slot:插槽。 -->
+  <div class="ui button" :class="cClass">
+    <template v-if='animated'>
+  <!-- $slots表示收集到的所有的插槽 -->
+  <!-- hidden content 是在semantic-ui约定的类 -->
+  <!-- visible content 是在semantic-ui约定的类 -->
+      <div v-if="$slots.hidden"  class="hidden content">
+          <!-- 具名插槽 -->
+          <slot name="hidden"></slot>
+      </div>
+      <div v-if="$slots.visible"  class="visible content">
+          <!-- 具名插槽 -->
+          <slot name="visible"></slot>
+      </div>
     </template>
     <template v-else>
-        <i v-if='icon' class="icon" :class="cIcon"></i>
-        <slot>我是一个按钮</slot>
+      <!-- 不带动画效果的按钮 -->
+      <!-- 如果用户设置了icon属性，则显示图标 -->
+      <i v-if="icon" class="icon" :class="icon"></i>
+     <slot>我是默认内容</slot>
     </template>
-</div>
+  </div>
+</template>
 ```
 
 注意:
@@ -505,8 +610,20 @@ methods: {
 
 更准确的做法是在组件内部抛出click事件来。
 
-
-
-```javascript
-this.$emit('click')
+```html
+<template>
+  <!-- slot:插槽。 -->
+  <div class="ui button" :class="cClass" @click="hEmitClick">
+   // ...
+  </div>
+</template>
+export default {
+  name: 'MyButton',
+  methods: {
+    hEmitClick () {
+      this.$emit('click')
+    }
+  }
+}
 ```
+

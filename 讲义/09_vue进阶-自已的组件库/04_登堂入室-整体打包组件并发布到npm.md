@@ -75,7 +75,7 @@ vue-cli-service build --target lib --name mylib ./packages/index.js
 找到package.json文件，注意修改如下三个地方：
 
 - 取消私有 private。
-- 设置版本号。一般默认是'1.0.0'，我们只能把它改小一些，因为随着后续功能的开发，我们会
+- 设置版本号。一般默认是'1.0.0'，我们只能把它改小一些，因为随着后续功能的开发，我们会升级版本号。所以现在是第一个版本。
 - main入口。它用来设置在其它项目中通过import "demo_vue_ui"时要进入的入口。
 
 ```javascript
@@ -83,6 +83,7 @@ vue-cli-service build --target lib --name mylib ./packages/index.js
     "name": "demo_vue_ui",
     "version": "0.1.0",
   	"private": false,
+    // dist/mylib.umd.min.js 是你上面打包的那个js文件的地址
   	"main": "dist/mylib.umd.min.js"
   }
 ```
@@ -91,8 +92,8 @@ vue-cli-service build --target lib --name mylib ./packages/index.js
 
 ## 上传到npm
 
-- 注册npm帐号(只需一次，随后不需要)
-- 在命令行中登陆npm(只需一次，随后不需要)
+- 注册npm帐号                   (只需一次，随后不需要)
+- 在命令行中登陆npm帐号(只需一次，随后不需要)
 - 通过`npm publish`命令发布到npm
 
 
@@ -117,6 +118,18 @@ vue-cli-service build --target lib --name mylib ./packages/index.js
 > 
 
 ## 在其它项目中下载使用
+
+```
+npm i  ui-93
+```
+
+main.js
+
+```
+import UI from 'ui-93'
+import 'ui-93/lib/ui-93.css'
+Vue.use(UI)
+```
 
 
 
@@ -185,7 +198,7 @@ module.exports = {
 }
 ```
 
-## 切换当前npm源到官网
+## 切换当前npm镜像源到官网
 
 由于我们需要把包上传到npm上，所以要先确保当前的npm源是npmjs.org。与之相关的命令有如下两条：
 
