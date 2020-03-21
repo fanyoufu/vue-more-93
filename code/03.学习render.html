@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <headline level="1">
+            <p>标题1</p>
+            <div slot="sub">12<span>4</span>3</div>
+        </headline>
+        <headline level="2">标题2</headline>
+        <headline level="3">标题3</headline>
+        <headline level="4">标题4</headline>
+        <com1></com1>
+        <br>
+        <com2></com2>
+    </div>
+
+    <script type="text/javascript">
+
+        Vue.component("headline",{
+            props:{
+                level:{
+                    default:1
+                }
+            },
+            created() {
+                // this.$slots会收集所有的插槽的数据。
+                // 如果是默认插槽，数据就在this.$slots.default
+                // 如果是具名插槽，数据就在this.$slots.插槽名
+                console.log('this.$slots', this.$slots.default )
+            },
+            render(h){
+                // 'h'+this.level 是第一个参数
+                // [this.$slots.default] 是第三个参数
+                if(this.$slots.sub){
+                    return h('h'+this.level,[this.$slots.default,this.$slots.sub])
+                }else {
+                    return h('h'+this.level,[this.$slots.default])
+                }
+            }
+            // template:`
+            //     <div>
+            //         <h1 v-if="level==1"><slot></slot></h1>
+            //         <h2 v-if="level==2"><slot></slot></h2>
+            //         <h3 v-if="level==3"><slot></slot></h3>
+            //         <h4 v-if="level==4"><slot></slot></h4>
+            //     </div>
+            // `
+        })
+
+        // 定义全局组件com1
+        Vue.component("com1",{
+            
+            data(){
+                return {title:"com1"}
+            },
+            template:`<h2>vue-{{title}}</h2>`
+        })
+        // 定义全局组件com2
+        // 不用template,用render
+        // 用render也能定义组件！！！
+        Vue.component("com2",{
+            methods: {
+                
+            },
+            data(){
+                return {title:"com1"}
+            },
+            created() {
+                
+            },
+            render(h){
+                // return h('h2',[`vue-`,this.title])
+                // render会被调用多次。初始化要调用；数据项变化了，视图要变，它也要调用。
+                // vue在调用 render()会传一个实参 ，这个实参就createElement函数。
+                // 这个函数就用来创建虚拟dom
+                // console.log(h)
+                // console.log(Date.now())
+
+                // h函数的返回值是虚拟dom
+                // 参数1：字符串
+                // var obj = h('h2')
+                // 参数1：组件对象
+                // var obj = h({
+                //     template: `<h2>{{title}}</h2>`,
+                //     data(){return{title:"vue"}}
+                // })
+
+                // var eleFun = function () {
+                //     return {
+                //         template: `<div>Hello Vue!</div>`
+                //     }
+                // }
+                //  参数1：函数
+                // var obj = h(eleFun())
+
+                // 参数2，是一个对象，是对参数1的补充描述
+                // var obj = h('h2',{
+                //     class:"abc",
+                //     style:{
+                //         color: 'red',
+                //         fontSize:'20px'
+                //     }
+                // },'你好呀')
+
+
+                // 虚拟dom
+                var span = h('span','我是一个小娃娃')
+
+                var obj = h('h2',{
+                    class:"abc",
+                    style:{
+                        color: 'red',
+                        fontSize:'20px'
+                    }
+                },['你好呀',span])
+                console.log(obj)
+                return obj;
+            }
+        })
+        vm = new Vue({
+            el:"#app",
+        })
+    
+    </script>
+</body>
+</html>

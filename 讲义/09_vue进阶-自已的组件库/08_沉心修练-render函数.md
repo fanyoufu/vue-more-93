@@ -1,7 +1,5 @@
 ## 问题
 
-
-
 如下代码你见过吗？
 
 ```javascript
@@ -30,7 +28,7 @@ render的作用是什么？它其中的h是什么意思？
 从上图中，不难发现一个Vue的应用程序是如何运行起来的，模板通过编译生成AST，再由AST生成Vue的`render`函数（渲染函数），渲染函数结合数据生成Virtual DOM树，Diff和Patch后生成新的UI。从这张图中，可以接触到Vue的一些主要概念：
 
 - **模板**：Vue的模板基于纯HTML，基于Vue的模板语法，我们可以比较方便地声明数据和UI的关系。
-- **AST**：AST是**Abstract Syntax Tree**的简称，Vue使用HTML的Parser将HTML模板解析为AST，并且对AST进行一些优化的标记处理，提取最大的静态树，方便Virtual DOM时直接跳过Diff。
+- **AST**：AST是**Abstract Syntax Tree**的简称（抽象语法树），Vue使用HTML的Parser将HTML模板解析为AST，并且对AST进行一些优化的标记处理，提取最大的静态树，方便Virtual DOM时直接跳过Diff。
 - **渲染函数**：渲染函数是用来生成Virtual DOM的。Vue推荐使用模板来构建我们的应用界面，在底层实现中Vue会将模板编译成渲染函数，当然我们也可以不写模板，直接写渲染函数，以获得更好的控制 （这部分是我们今天主要要了解和学习的部分）。
 - **Virtual DOM**：虚拟DOM树，Vue的Virtual DOM Patching算法是基于**[Snabbdom](https://github.com/snabbdom/snabbdom)**的实现，并在些基础上作了很多的调整和改进。
 - **Watcher**：每个Vue组件都有一个对应的`watcher`，这个`watcher`将会在组件`render`的时候收集组件所依赖的数据，并在依赖有更新的时候，触发组件重新渲染。你根本不需要写`shouldComponentUpdate`，Vue会自动优化并更新要更新的UI。
@@ -86,12 +84,13 @@ Vue推荐在绝大多数情况下使用`template`来创建你的HTML。然而在
 
 ### 基本格式
 
-它就是一个配置项，与data,methods，computer,create一样。
+在组件中，它就是一个配置项，与data,methods，computed,create一样。
 
 ```javascript
 {
     data(){},
     methods:{},
+    // h 是一个形参
     render(h){
         return h(参数1,参数2,参数3);
         // 参数1： String | Object | Function
@@ -108,7 +107,7 @@ Vue推荐在绝大多数情况下使用`template`来创建你的HTML。然而在
 
 ### 形参
 
-在render()被调用时，vue会自动传入一个函数给h。这个函数就是createElement，在组件内部，我们也可以通过`this.$createElement`来获取它。
+在render()被调用时，vue会自动传入一个实参 给h。这个实参是一个函数（createElement），在组件内部，我们也可以通过`this.$createElement`来获取它。
 
 ```javascript
 Vue.component("com2",{
@@ -141,7 +140,7 @@ render()是依赖于createElement来创建虚拟dom的，所以，我们要来�
 
 ### 功能
 
-创建虚拟dom。
+创建虚拟dom(VNode)。
 
 ### 格式
 
@@ -173,7 +172,9 @@ Vue.component('custom-element', {
 })
 ```
 
-对象
+产生一个空标签`<div></div>`
+
+**对象 (就是一个组件对象)**
 
 ```javascript
 Vue.component('custom-element', {
@@ -185,6 +186,8 @@ Vue.component('custom-element', {
     }
 })
 ```
+
+得到的真实dom:`<h2>vue</h2>`
 
 函数
 
@@ -209,7 +212,7 @@ Vue.component('custom-element', {
 
 ```javascript
 {
-    'class':{ className1 : true, className2: true},
+    class:{ className1 : true, className2: true},
     style:{
         color: 'red',
         fontSize:'20px'
