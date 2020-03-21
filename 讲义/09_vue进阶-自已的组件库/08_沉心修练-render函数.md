@@ -2,12 +2,6 @@
 
 
 
-render() created(),mounted() 的执行时间是？
-
-
-
-
-
 如下代码你见过吗？
 
 ```javascript
@@ -19,19 +13,19 @@ var app = new Vue({
 })
 ```
 
-它的作用是什么？它其中的h是什么意思？
+render的作用是什么？它其中的h是什么意思？
 
 
 
-一个vue组件能够展示在页面上，因为它有tempalte，或者是render函数。它必须有这两者之一。
+一个vue组件能够展示在页面上，因为它有template，或者是render函数。它必须有这两者之一。
 
-一般情况下，我们使用tempalte就可满足需求了。但在一些特定的情况下，我们要使用reander函数。
+一般情况下，我们使用template就可满足需求了。但在一些特定的情况下，我们要使用reander函数。
 
 ## 宏观概览-render
 
 
 
-<img src="../08_vue进阶/asset/image-20200228125207744.png" alt="image-20200228125207744" style="zoom:50%;" />
+<img src="./asset/image-20200228125207744.png" alt="image-20200228125207744" style="zoom:50%;" />
 
 从上图中，不难发现一个Vue的应用程序是如何运行起来的，模板通过编译生成AST，再由AST生成Vue的`render`函数（渲染函数），渲染函数结合数据生成Virtual DOM树，Diff和Patch后生成新的UI。从这张图中，可以接触到Vue的一些主要概念：
 
@@ -88,7 +82,11 @@ Vue推荐在绝大多数情况下使用`template`来创建你的HTML。然而在
 </script>
 ```
 
-## render的基本格式
+## 认识render
+
+### 基本格式
+
+它就是一个配置项，与data,methods，computer,create一样。
 
 ```javascript
 {
@@ -108,13 +106,11 @@ Vue推荐在绝大多数情况下使用`template`来创建你的HTML。然而在
 
 
 
-### render的形参和返回值
+### 形参
 
-#### 形参
+在render()被调用时，vue会自动传入一个函数给h。这个函数就是createElement，在组件内部，我们也可以通过`this.$createElement`来获取它。
 
-在render()被调用时，它会传入一个函数给h。这个函数就是createElement，在组件内部，我们也可以通过`this.$createElement`来获取它。
-
-```bash
+```javascript
 Vue.component("com2",{
     data(){
         return {title:"com1"}
@@ -129,17 +125,19 @@ Vue.component("com2",{
 })
 ```
 
-#### 返回值
+### 返回值
 
 render()方法使用传入的h函数来创建一个东东，然后再返回出去，那么，这个东东是什么？为什么它能起到和template一样的效果？
 
-结论是：vnode，也就是我们说的虚拟dom.
+结论是：**vnode**，也就是我们说的虚拟dom.
 
 
 
-到底会返回什么呢？其实不是一个实际的 DOM 元素。它更准确的名字可能是 `createNodeDescription`，因为它所包含的信息会告诉 Vue 页面上需要渲染什么样的节点，包括及其子节点的描述信息。我们把这样的节点描述为“虚拟节点 (virtual node)”，也常简写它为“**VNode**”。“虚拟 DOM”是我们对由 Vue 组件树建立起来的整个 VNode 树的称呼。
+> 它更准确的名字可能是 `createNodeDescription`，因为它所包含的信息会告诉 Vue 页面上需要渲染什么样的节点，包括及其子节点的描述信息。我们把这样的节点描述为“虚拟节点 (virtual node)”，也常简写它为“**VNode**”。“虚拟 DOM”是我们对由 Vue 组件树建立起来的整个 VNode 树的称呼。
 
 ## createElement
+
+render()是依赖于createElement来创建虚拟dom的，所以，我们要来具体学习它的用法。
 
 ### 功能
 
@@ -154,12 +152,12 @@ createElement h(参数1,参数2,参数3);
 
 // 参数2：Object。是对参数1所表示的对象的设置。
 
-// 参数3：参数1表示的对象的子对象。
+// 参数3：参数1表示的对象的子对象。理解为html标签中的子标记（如:ul下的li）
 ```
 
 ### 参数1
 
-`{String | Object | Function}`
+取值有三种可能：`{String | Object | Function}`
 
 第一个参数对于`createElement`而言是一个必须的参数，这个参数可以是字符串`string`、是一个对象`object`，也可以是一个函数`function`。
 
@@ -191,21 +189,23 @@ Vue.component('custom-element', {
 函数
 
 ```javascript
-render: function (createElement) {
-    var eleFun = function () {
-        return {
-            template: `<div>Hello Vue!</div>`
+Vue.component('custom-element', {
+    render: function (createElement) {
+        var eleFun = function () {
+            return {
+                template: `<div>Hello Vue!</div>`
+            }
         }
-    }
-    return createElement(eleFun())
-}
+        return createElement(eleFun())
+	}
+})
 ```
 
 
 
 ### 参数2
 
-表示的格式
+参数2是一个对象，它用来表示对参数1的描述。可选的。
 
 ```javascript
 {
@@ -243,14 +243,16 @@ render: function (createElement) {
       expression: "1 + 1",
       arg:'foo',
       modifiers:{bar:true}
-        
-    }],
+    }]
 }
 ```
 
 ### 参数3
 
-是字符串，或者数组。用来表示子内容。
+格式是字符串或数组。用来表示子内容。（理解为ul中的li，ul是父级节点，li是子级节点）
+
+- 字符串。它最终会渲染成元素的内容。
+- 数组。它最终会在为元素的子节点
 
 ```javascript
 render(h){
@@ -275,212 +277,161 @@ render(h){
 常规方式：使用template
 
 ```javascript
-<template>
-    <div>
-        <h1 v-if="level === 1">
-            <slot></slot>
-        </h1>
-        <h2 v-else-if="level === 1">
-            <slot></slot>
-        </h2>
-        .....
-    </div>
-</template>
-<script>
-export default {
+Vue.component("headline",{
     props:{
         level:{
-            type:Number,
             default:1
         }
-    }   
-}
-</script>
+    },
+    template:`
+        <div>
+            <h1 v-if="level==1"><slot></slot></h1>
+            <h2 v-if="level==2"><slot></slot></h2>
+            <h3 v-if="level==3"><slot></slot></h3>
+            <h4 v-if="level==4"><slot></slot></h4>
+        </div>
+       `
+})
 ```
 
 
 #### 使用render
 
 ```javascript
-export default {
+Vue.component("headline",{
     props:{
-        level:{type:Number,default:1},
-        title:{type:String,default:""}
+        level:{
+            default:1
+        }
     },
     render(h){
-        return h("h"+this.level,[h("a",{domProp:{href:"#"+this.title}],this.$slots.default)
+        return h('div',[h('h'+this.level,[this.$slots.default])])
     }
-}
+})
 ```
 
 
 
-## 实操 把一段template改成render
+## 实操 把template改成render
 
-### 任务1
+### 任务1 处理属性
 
-如下是template
+把如下组件中的template改成render的写法。
 
 ```javascript
- {
+Vue.component("com2",{
      data(){
          return {
              show: true
          }
      },
-     template:` <div id="element" :class="{show:show}" @click="hClick">
-div的内容
-</div>`,
      methods:{
           hClick(){
               console.info("clicked")
           }
      }
- }
+     template:`
+			<div id="element" :class="{show:show}" @click="hClick">
+				div的内容
+			</div>` 
+ })
 ```
 
 下面是改写之后的render
 
 ```javascript
-{
-    data(){
-        return {
-            show: true
-        }
-    },
+Vue.component("com2",{
+        data(){
+            return {
+                show: true
+            }
+        },
         methods:{
             hClick(){
                 console.info("clicked")
             }
         },
-            render:function (createElement){
-                let rst = createElement("div",{
-                    class:{show:this.show},
-                    attrs:{id:"element"},
-                    on:{click:this.hClick}
-                },"div的内容")
-                return rst;
-            }
-}
+        render:function (createElement){
+            let rst = createElement("div",{
+                class:{show:this.show},
+                attrs:{id:"element"},
+                on:{click:this.hClick}
+            },"div的内容")
+            return rst;
+        }
+    })
 ```
 
 
 
-### 实操2：
+### 任务2 改写v-if
 
-template的写法
-
-```javascript
-<div id="app">
-    <custom-element></custom-element>
-</div>
-
-Vue.component('custom-element', {
-    template: `<div id="box" :class="{show: show}" @click="handleClick">Hello Vue!</div>`,
-    data () {
-        return {
-            show: true
-        }
-    },
-    methods: {
-        handleClick: function () {
-            console.log('Clicked!')
-        }
-    }
-})
-
-```
-
-对应render的写法
+把如下组件的template用render来改写
 
 ```javascript
-Vue.component('custom-element', {
-    render: function (h) {
-        return h('div', {
-            class: {
-                show: this.show
-            },
-            attrs: {
-                id: 'box'
-            },
-            on: {
-                click: this.handleClick
-            }
-        }, 'Hello Vue!')
-    },
-    data () {
+Vue.component("com-list",{
+    data(){
         return {
-            show: true
+            items:[1,2,3]
         }
     },
-    methods: {
-        handleClick: function () {
-            console.log('Clicked!')
-        }
-    }
+    template:`<p v-if="items.length">
+		有{{items.length}}条数据
+		</p>
+		<p v-else>No items found.</p>` 
 })
 ```
 
-
-
-### 任务3 v-if
+结果如下：
 
 ```javascript
-<ul v-if="items.length">
-    <li v-for="item in items">{{ item }}</li>
-</ul>
-<p v-else>No items found.</p>
-```
-
-```javascript
-Vue.component('item-list',{
-    props: ['items'],
-    render: function (h) {
-        if (this.items.length) {
-            return h('ul', this.items.map((item) => {
-                return h('item')
-            }))
+Vue.component("com-list",{
+    data(){
+        return {
+            items:[1,2,3]
+        }
+    },
+    render(h){
+        if(this.items.length) {
+            return h('p',`有${this.items.length}条数据`)
         } else {
-            return h('p', 'No items found.')
+            return h('p',`No items found.`)
         }
     }
 })
 ```
 
-### 任务3 v-model
+### 任务3  改写v-for
+
+把如下组件的template用render来改写
 
 ```javascript
-<div id="app">
-    <el-input :name="name" @input="val => name = val"></el-input>
-</div>
-
-Vue.component('el-input', {
-    render: function (createElement) {
-        var self = this
-        return createElement('input', {
-            domProps: {
-                value: self.name
-            },
-            on: {
-                input: function (event) {
-                    self.$emit('input', event.target.value)
-                }
-            }
-        })
-    },
-    props: {
-        name: String
-    }
-})
-
-let app = new Vue({
-    el: '#app',
-    data () {
+Vue.component("com-list",{
+    data(){
         return {
-            name: 'fan'
+            items:[1,2,3]
         }
+    },
+    template:`<ul>
+    	<li v-for="item in items">{{ item }}</li>
+	</ul>` 
+})
+```
+
+改写如下：
+
+```javascript
+Vue.component("com-list",{
+    data(){
+        return {
+            items:[1,2,3]
+        }
+    },
+    render(h){
+        return h('ul',[ ...this.items.map((item)=>{
+            return h('li',item)
+        })])
     }
 })
-
 ```
 

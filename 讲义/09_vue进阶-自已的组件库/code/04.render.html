@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+        <div id="app">
+    <com1></com1><br>
+    <com2></com2>
+    <com-list></com-list>
+    <headline>h1</headline>
+    <headline level="2">h2</headline>
+</div>
+<script type="text/javascript">
+
+    Vue.component("com1",{
+        data(){
+            return {title:"com1"}
+        },
+        template:`<h2>vue-{{title}}</h2>`
+    })
+    // Vue.component("com2",{
+    //     data(){
+    //         return {title:"com333"}
+    //     },
+    //     render(h){
+    //         return h('h2',[`vue-`,this.title])
+    //     }
+    // })
+    Vue.component("com2",{
+        
+        data(){
+            return {
+                show: true
+            }
+        },
+        methods:{
+            hClick(){
+                console.info("clicked")
+            }
+        },
+        template:`<h2>vue11-{{title}}</h2>`,
+        render:function (createElement){
+            let rst = createElement("div",{
+                class:{show:this.show},
+                attrs:{id:"element"},
+                on:{click:this.hClick}
+            },"div的内容")
+            return rst;
+        }
+    })
+
+    Vue.component("headline",{
+        props:{
+            level:{
+                default:1
+            }
+        },
+        template:`
+            <div>
+                <h1 v-if="level==1"><slot></slot></h1>
+                <h2 v-if="level==2"><slot></slot></h2>
+                <h3 v-if="level==3"><slot></slot></h3>
+                <h4 v-if="level==4"><slot></slot></h4>
+            </div>
+        `,
+        render(h){
+            // return h('div',["[h('h'+this.level,[this.$slots.default])]"])
+            // return h('div',['<span>1</span>',3])
+            return h('div',[ h('span',1),3])
+        }
+    })
+
+    
+
+    // Vue.component("com-list",{
+        
+    //     data(){
+    //         return {
+    //             items:[1,2,3]
+    //         }
+    //     },
+    //     template:`<p v-if="items.length">
+    //             有{{items.length}}条数据
+    //         </p>
+    //         <p v-else>No items found.</p>` 
+    // })
+    // Vue.component("com-list",{
+    //     data(){
+    //         return {
+    //             items:[1,2,3]
+    //         }
+    //     },
+    //     render(h){
+    //         if(this.items.length) {
+    //             return h('p',`有${this.items.length}条数据`)
+    //         } else {
+    //             return h('p',`No items found.`)
+    //         }
+    //     }
+    // })
+    // Vue.component("com-list",{
+    //     data(){
+    //         return {
+    //             items:[1,2,3]
+    //         }
+    //     },
+    //     template:`<ul>
+    //         <li v-for="item in items">{{ item }}</li>
+    //     </ul>` 
+    // })
+
+    Vue.component("com-list",{
+        data(){
+            return {
+                items:[1,2,3]
+            }
+        },
+        render(h){
+            return h('ul',[ ...this.items.map((item)=>{
+                return h('li',item)
+            })])
+        }
+    })
+
+    
+
+
+    vm = new Vue({
+        el:"#app",
+    })
+
+</script>
+
+</body>
+</html>

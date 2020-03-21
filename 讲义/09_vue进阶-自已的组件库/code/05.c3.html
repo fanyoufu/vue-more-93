@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: all .5s;
+} 
+
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: scale(0.01) translateX(100px);
+}
+
+</style>
+</head>
+<body>
+    <!-- <div id="app">
+        <transition name="fade">
+        
+            <div v-show="show">
+                <img src="http://image11.m1905.cn/uploadfile/2012/0704/20120704112030662.jpg" alt="">
+            </div>
+        </transition>
+        <button @click="show=!show">切换</button>
+    </div> -->
+
+    <div id="app">
+        
+        
+        <div id="wrap" style="width:550px;height:308px">
+            <img src="http://image11.m1905.cn/uploadfile/2012/0704/20120704112030662.jpg" alt="">
+        </div>
+       
+        <button id="btn">切换</button>
+    </div>
+
+    <script>
+        var wrap = document.getElementById('wrap')
+        document.getElementById('btn').onclick = function(){
+            // alert(1)
+            wrap.className = "fade-enter"
+            setTimeout(()=>{
+                wrap.className = "fade-enter-active"
+            },50)
+
+        }
+        wrap.addEventListener('transitionend',()=>{
+            console.log(1)
+            wrap.className = ""
+        })
+        // var em = new Vue({
+        //     el:'#app',
+        //     data:{
+        //         show:true
+        //     }
+
+        // })
+    </script>
+</body>
+</html>

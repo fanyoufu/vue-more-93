@@ -70,6 +70,8 @@ vue-cli-service build --target lib --name mylib ./packages/index.js
 
 在命令行中运行`npm run b`。如果没有什么错误，你应该可以看到lib目录下的内容了。
 
+> 如果这个过程报错提示`no-console`之类的，你可能需要把packages下所有代码中的console都注释掉。
+
 ## 修改package.json以方便上传npm
 
 找到package.json文件，注意修改如下三个地方：
@@ -245,10 +247,12 @@ npm logout
 
 
 
-如果出错了，出错的可能是：
+如果npm publish 出错了，出错的可能是：
 
 - 这个包名被别人先用了。
+- 如果你是第一次注册npm的话，先去你的邮箱里去验证邮件。(否则会给你403错误。you must verify your email before publishing a new package)
 - 包的版本号不对：每次publish时，包的版本号都应该要大于之前的版本号。
+- 你的npm镜像不是官网。
 - 文件过大。你可能需要创建`.npmignore`文件来设置在打包时要忽略哪些文件。如下是一个demo.
 
 ```.npmignore
