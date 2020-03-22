@@ -149,32 +149,7 @@ var proxyObj = new Proxy(obj, {
 
 ### 访问不存在的属性名时给出更加优雅的提示
 
-在我们的系统中，通常会把所有的用到的标志字符串写在成常量的格式.一般的做法是单独写在一个文件中，然后在其他需要用到的地方引入这个文件。用es6的模块化的写法：
 
-const.js
-
-```
-/*const.js 系统中所有的常量设置*/
-const con = {
- COMPANYNAME:"jd",
-}
-
-export defalut con;
-```
-
-在其他文件中使用，如下：
-
-file.js
-
-```
-import CONST from "./const"
-console.info(CONST.COMPANYNAME)
-console.info(CONST.COMPANYNAME1) // 不小心把常量名写错,并不会有什么特殊的提示效果。
-```
-
-
-
-改进如下：
 
 ```
 const con = {
@@ -184,7 +159,7 @@ const con = {
 let proxyConst = new Proxy(con, {
   get: function (target, key, receiver) {
     if(key in target)
-    return target[key];
+    	return target[key];
     else{
       throw new Error("error:常量名"+key+"不存在！")
     }
@@ -192,17 +167,15 @@ let proxyConst = new Proxy(con, {
 
 });
 
-export defalut proxyConst;
 ```
 
 
 
 ### 允许数组下标是负值
 
-在js中，数组的有效下表是从0开始的。
+在js中，数组的有效下标是从0开始的。
 
 ```
-
 var arr = [1,2,3];
 
 console.info(arr[0]) // 1
@@ -212,13 +185,13 @@ console.info(arr[-1]) // undefined
 console.info(arr[100]) // undefined
 ```
 
-
-
 值得注意的是，`下标越界或者是负值的情况下，得到的结果是undefined，而不是报错`。
+
+#### 需求
 
 如果我们希望数组可以取负值下表，且规则如下：
 
-\- -n表示倒数第n个元素。例如：-1表示倒数第一个元素。
+-n表示倒数第n个元素。例如：arr[-1]表示数组arr中的倒数第一个元素。
 
 可以使用Proxy解决如下：
 
@@ -251,27 +224,3 @@ console.info(proxyArr[-1]); // 3
 
 - 此时，完全可以把proxyArr当作一个数组来使用，sort,push等方法均可以调用。Array.isArray(proxyArr) === true
 
-当然，你也可以进一步封装成工厂函数。
-
-
-
-```
-function myArr(...args){
-
-  var arr = new Array(...args);
-
-  var proxyArr = new Proxy(arr,{
-
-    get: (target,key)=>{
-      let index = Number(key);
-      if(index < 0){
-        key = target.length + index;
-      }
-      return target[key];
-    }
-  })
-  return proxyArr;
-}
-var obj = myArr([1,2,3]);
-console.info(obj[0],obj[-1])
-```
