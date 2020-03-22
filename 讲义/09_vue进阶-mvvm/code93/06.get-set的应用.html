@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <span id="span">1000</span>
+    </div>
+    <script>
+        // 实现目标是：当我通过代码 obj.money = 20000时，
+        // span中的内容也要跟着变成20000
+        let obj = {
+            // money: 10000
+        }
+
+        var _money = 10000
+        Object.defineProperty(obj,'money',{
+            get(){
+                // 获取值，打个 0.9
+                alert('你无权问我的工资！！')
+                return _money * 100
+            },
+            set(val){
+                // set 拦截器
+                console.log('修改money属性值')
+                console.log(val);
+                _money = val
+                // 去修改视图
+                document.getElementById('span').innerHTML = val
+            }
+        })
+    </script>
+</body>
+</html>

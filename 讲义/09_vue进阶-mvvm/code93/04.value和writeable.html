@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+    var obj = {
+        a:1
+    }
+    // 添加一个新属性
+    
+    Object.defineProperty(obj,"b",{
+        value: 200, // 属性值
+        writable: false, // 可写入的是 false. 不能修改
+    })
+
+    // 添加一个新属性
+    Object.defineProperty(obj,"c",{
+        value: 300, // 属性值
+        writable: true // 可写入的是 true. 可以修改
+    })
+
+    obj.b = 2; // 不报错，但不生效。 b属性是只读的
+    obj.c = 3; // 能正常修改属性值。
+
+    console.log(obj)
+
+
+
+    </script>
+</body>
+</html>

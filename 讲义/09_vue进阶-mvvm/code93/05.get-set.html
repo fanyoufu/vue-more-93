@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+    var obj = {
+        a:1
+    }
+    // 
+    // Uncaught TypeError: Invalid property descriptor. 
+    //  Cannot both specify accessors and a value or writable attribute
+
+    // set get 不能与value和writeable同时存在 。
+
+
+    // get,set 无法保存属性的值，只能借助另一个额外的变量
+
+    // 需求，在你设置age属性时，如果属性>30岁，则统一改成28。
+    var _age = 18
+    Object.defineProperty(obj,'age',{
+        get:function(){
+            // obj.age ，则会执行get函数；
+            // get()的返回值，就是obj.age的值
+            // console.log('获取age属性')
+            return _age
+        },
+        set(val){
+            // obj.age = XX ，则会执行set函数，并且会传入值给val
+            if(val > 30 ){
+                console.log('程序员，30岁是一个劫')
+                val = 28
+            }
+            _age = val
+        }
+    })
+
+    console.log(obj);
+    obj.age = 31;
+    console.log(obj.age); // 28
+    
+
+
+    
+    
+
+
+
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ Object.defineProperty()
 
 ## Object.defineProperty
 
-> `Object.defineProperty()` 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。
+> `Object.defineProperty()` 方法会直接在一个对象上定义一个新属性、或者修改一个对象的现有属性， 并返回这个对象。
 
 给对象添加属性的方式有：
 
@@ -29,6 +29,8 @@ Object.defineProperty()
   obj["a"] = 1
   ```
 
+上面的方式都是我们学习过的，现在新多出一种来。
+
 - Object.defineProperty()
 
 ## 格式
@@ -44,7 +46,7 @@ Object.defineProperty(obj, prop, descriptor)
 - 参数
   - `obj`:要在其上定义属性的对象。
   - `prop`:要定义或修改的属性的名称。
-  - `descriptor`:将被定义或修改的属性描述符。
+  - `descriptor`:对参数2的描述，也叫属性描述符。
 
 - 返回值
 
@@ -54,14 +56,14 @@ Object.defineProperty(obj, prop, descriptor)
 
 ```javascript
 Object.defineProperty(对象, 属性名,{
-    configurable:false,
-    enumerable:false,
+    configurable:false, // 可配置
+    enumerable:false,   // 可枚举
     
-    writable:false,
-    value:undefined,
+    writable:false,     // 可写入
+    value:undefined,    // 初始值
     
-    get:function(){},
-    set:function(){}
+    get:function(){}, // 重点 
+    set:function(){}  // 重点
     
 })
 ```
@@ -85,49 +87,73 @@ Object.defineProperty(对象, 属性名,{
 
 ## 学习属性描述符
 
-### enumerable
+### enumerable :可枚举的
 
 ```javascript
-
-const obj = {
+// 对象
+var obj = {
     b:1
 }
-
+// 添加新属性
 Object.defineProperty(obj,"a",{
-    value:1,
-    enumerable:false
+    value:100, // 值
+    enumerable:false // 不可枚举。不能被for in循环出来
 })
 
 Object.defineProperty(obj,"c",{
-    value:2,
-    enumerable:true
+    value:200, // 值
+    enumerable:true  // 可枚举。能被for in循环出来
 })
 
-for(var key of obj) {
+console.dir(obj)
+
+
+// 循环取出属性名。它只能取出 可枚举的属性名
+// for(var 属性名 in 对象)
+// 功能是：循环取出对象中的,可枚举的，所有属性名
+for(var key in obj) {
     console.log(key)
 }
-
 ```
 
+结论：
 
+enumerable只有为true，它才能被枚举(被for in循环）。
+
+> for of是循环属性值，for in 是循环属性名
 
 ### configurable
 
+可配置的。如果是false，则不能再次使用defineProperty去修改，修改就会报错。
+
+也可以理解这个属性是`只读的`它不能被修改了。
+
 ```javascript
+var obj = {}
 // 定义属性
 Object.defineProperty(obj,"c",{
-    // 不允许再次配置这个属性
-    configurable: false,
-    // 这个属性能否被for in 循环遍历
-    enumerable:true,
-    value:100
 
+    configurable: false, 
+    // 如果这个值是false,说明这属性将不能再次使用defineProperty来修改
+    // 如果再通过：obj.c = 200，则也不会生效。
+    value:100 
 })
+// 对现有属性的修改
+// Uncaught TypeError: Cannot redefine property: c
+// Object.defineProperty(obj,"c",{
+//     value:200 
+// })
+
+console.log(obj)
 ```
 
 
 
 ### value和writable
+
+value:是属性初值
+
+writeable: 可写入的
 
 定义只读的属性:
 
@@ -151,6 +177,8 @@ const定义的对象，它的属性还是可以修改的。我们可以通过wri
 在上面的代码中，如果给对象的属性赋值，并不会修改属性的值。
 
 ### 进阶：对已有对象进行封装，以得到一个常量对象
+
+目标：写一个函数，传入对象1，返回对象2。要求对象2的属性都不能被修改。 
 
 ```javascript
 const obj = {
@@ -176,9 +204,54 @@ console.log("设置之后的值是：",obj1)
 
 ### get和set
 
-- 它们与value和writable是互斥的。
-- 一旦使用它们，则这个属性就没有保存属性值的能力
-- 用它们来做拦截器
+get()当访问对象的属性时，它会执行；
+
+set()当设置对象的属性时，它会执行；
+
+- 它们与value和writable是互斥的（一个属性的属性描述符中， 不能同时有 `value和writable` g与 `get和set`）。
+- 一旦使用它们，则这个属性就没有保存属性值的能力，如果希望它能保存属性性，则需要引入另一个额外的变量。
+- 应用：它们来做拦截器
+
+
+
+```javascript
+var obj = {
+        a:1
+    }
+    // 
+    // Uncaught TypeError: Invalid property descriptor. 
+    //  Cannot both specify accessors and a value or writable attribute
+
+    // set get 不能与value和writeable同时存在 。
+
+
+    // get,set 无法保存属性的值，只能借助另一个额外的变量
+
+    // 需求，在你设置age属性时，如果属性>30岁，则统一改成28。
+    var _age = 18
+    Object.defineProperty(obj,'age',{
+        get:function(){
+            // obj.age ，则会执行get函数；
+            // get()的返回值，就是obj.age的值
+            // console.log('获取age属性')
+            return _age
+        },
+        set(val){
+            // obj.age = XX ，则会执行set函数，并且会传入值给val
+            if(val > 30 ){
+                console.log('程序员，30岁是一个劫')
+                val = 28
+            }
+            _age = val
+        }
+    })
+
+    console.log(obj);
+    obj.age = 31;
+    console.log(obj.age); // 28
+```
+
+
 
 #### 实现常量对象
 
@@ -209,9 +282,9 @@ console.log("设置之后的值是：",obj.age)
 
 
 
-### 把一个已有对象设置成只读的对象
+### 进阶：对已有对象进行封装，以得到一个常量对象
 
-- 思路：只不设置set
+- 思路：只设置get，不设置set
 
 ```javascript
 const obj = {
@@ -239,6 +312,40 @@ console.log("设置之后的值是：",obj1)
 
 ## 实现从数据到视图的变化
 
+实现目标：当对象中的属性值变化时，能够通知外界。
+
+```html
+<div>
+        <span id="span">1000</span>
+    </div>
+<script>
+    // 实现目标是：当我通过代码 obj.money = 20000时，
+    // span中的内容也要跟着变成20000
+    let obj = {
+        // money: 10000
+    }
+
+    var _money = 10000
+    Object.defineProperty(obj,'money',{
+        get(){
+            // 获取值，打个 0.9
+            alert('你无权问我的工资！！')
+            return _money * 100
+        },
+        set(val){
+            // set 拦截器
+            console.log('修改money属性值')
+            console.log(val);
+            _money = val
+            // 去修改视图
+            document.getElementById('span').innerHTML = val
+        }
+    })
+</script>
+```
+
+
+
 ### 进阶示例：监听属性的变化
 
  ```javascript
@@ -259,7 +366,7 @@ obj.salary; //在控制台输出
 
 
 
-#### 封装函数监听全部的属性
+### 封装函数，监听全部的属性
 
 ```
 function observe(obj) {
@@ -289,7 +396,7 @@ data.bonus;
 
 vue2的核心原理就是这个api`Object.defineProperty()` ，看起来很简单是吧。
 
-到此，基础准备工作也就告一段落了。下面涉及到 js中的构造器,原型链,等内容，坐好车，跟我走吧。
+
 
 ## 与vue的关联
 

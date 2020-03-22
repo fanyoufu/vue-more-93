@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        var obj = {}
+        // 定义属性
+        Object.defineProperty(obj,"c",{
+           
+            configurable: false, 
+            // 如果这个值是false,说明这属性将不能再次使用defineProperty来修改
+            // 如果再通过：obj.c = 200，则也不会生效。
+            value:100 
+        })
+        // 对现有属性的修改
+        // Uncaught TypeError: Cannot redefine property: c
+        // Object.defineProperty(obj,"c",{
+        //     value:200 
+        // })
+
+        console.log(obj)
+
+    </script>
+</body>
+</html>

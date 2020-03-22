@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        // 对象
+        var obj = {
+            b:1
+        }
+        // 添加新属性
+        Object.defineProperty(obj,"a",{
+            value:100, // 值
+            enumerable:false // 不可枚举。不能被for in循环出来
+        })
+
+        Object.defineProperty(obj,"c",{
+            value:200, // 值
+            enumerable:true  // 可枚举。能被for in循环出来
+        })
+
+        console.dir(obj)
+
+
+        // 循环取出属性名。它只能取出 可枚举的属性名
+         // for(var 属性名 in 对象)
+        // 功能是：循环取出对象中的,可枚举的，所有属性名
+        for(var key in obj) {
+            console.log(key)
+        }
+
+        
+        // for(var 属性值 of 对象)
+        // 功能是：循环取出对象中的所有属性值
+        // for(var val of obj) {
+        //     console.log(key)
+        // }
+
+
+    </script>
+</body>
+</html>
