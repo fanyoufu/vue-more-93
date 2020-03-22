@@ -6,16 +6,25 @@
 
     <title>Document</title>
     <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+    <link href="https://cdn.bootcss.com/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
-        <headline level="1">
-            <p>标题1</p>
+        <headline :level="1">
+            标题1
             <div slot="sub">12<span>4</span>3</div>
         </headline>
-        <headline level="2">标题2</headline>
-        <headline level="3">标题3</headline>
-        <headline level="4">标题4</headline>
+        <headline :level="3" size="mini">标题2</headline>
+        <headline :level="3" size="huge">标题2</headline>
+        <headline :level="3" icon="user" size="huge">标题3
+            <template slot="sub">
+                副标题1
+            </template>
+            <template slot="sub">
+                副标题2
+            </template>
+        </headline>
+        <headline :level="4">标题4</headline>
         <com1></com1>
         <br>
         <com2></com2>
@@ -26,9 +35,17 @@
         Vue.component("headline",{
             props:{
                 level:{
+                    type:Number,
                     default:1
+                },
+                icon:{
+                    type:String
+                },
+                size:{
+                    type:String
                 }
             },
+
             created() {
                 // this.$slots会收集所有的插槽的数据。
                 // 如果是默认插槽，数据就在this.$slots.default
@@ -36,14 +53,28 @@
                 // console.log('this.$slots', this.$slots.default )
             },
             render(h){
-                // 'h'+this.level 是第一个参数
-                // [this.$slots.default] 是第三个参数
+                let classArr = ['ui','header']
+                classArr.push(this.size)
+                let classStr = classArr.join(' ')
+                var icon =null
+                if(this.icon) {
+                    icon = h('i',{class:'icon ' +this.icon})
+                }
+
+                var content = null;
                 if(this.$slots.sub){
                     console.log(this.$slots.sub)
-                    return h('h'+this.level,[this.$slots.default,this.$slots.sub])
-                }else {
-                    return h('h'+this.level,[this.$slots.default])
+                    let subContent = h('div',{class:'sub header'},this.$slots.sub)
+                    content = h('div',{class:'content'},[this.$slots.default,subContent])
+                }  else {
+                    content = h('div',{class:'content'},this.$slots.default)
                 }
+                h('div',{class:'content'},[icon,content])
+                // 'h'+this.level 是第一个参数
+                // [this.$slots.default] 是第三个参数
+               
+                return h('h'+this.level,{class:classStr},[icon,content])
+                
             }
             // template:`
             //     <div>

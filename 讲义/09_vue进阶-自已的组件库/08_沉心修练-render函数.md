@@ -343,26 +343,26 @@ Vue.component("com2",{
 下面是改写之后的render
 
 ```javascript
-Vue.component("com2",{
-        data(){
-            return {
-                show: true
-            }
+render(h){
+    return h('div',{
+        class:{ 'show' : this.show},
+        attrs:{
+            id:'element'
         },
-        methods:{
-            hClick(){
-                console.info("clicked")
+        on:{
+            // click:function(){
+            //     // this是window
+            //     console.log(this)
+            //     this.hClick()
+            // },
+            click:()=>{
+                // this就是vue组件
+                console.log(this)
+                this.hClick()
             }
-        },
-        render:function (createElement){
-            let rst = createElement("div",{
-                class:{show:this.show},
-                attrs:{id:"element"},
-                on:{click:this.hClick}
-            },"div的内容")
-            return rst;
         }
-    })
+    },'div的内容')
+} 
 ```
 
 
@@ -388,20 +388,16 @@ Vue.component("com-list",{
 结果如下：
 
 ```javascript
-Vue.component("com-list",{
-    data(){
-        return {
-            items:[1,2,3]
-        }
-    },
-    render(h){
-        if(this.items.length) {
-            return h('p',`有${this.items.length}条数据`)
-        } else {
-            return h('p',`No items found.`)
-        }
+render(h) {
+    // 在template 中可以用v-if
+    // 在render中不能用了
+    // return h('p',`有${this.items.length}条数据`)
+    if(this.items.length) {
+        return h('p',"有"+ this.items.length + "条数据")
+    } else {
+        return h('p','No items found.')
     }
-})
+}
 ```
 
 ### 任务3  改写v-for
@@ -424,17 +420,20 @@ Vue.component("com-list",{
 改写如下：
 
 ```javascript
-Vue.component("com-list",{
-    data(){
-        return {
-            items:[1,2,3]
-        }
-    },
-    render(h){
-        return h('ul',[ ...this.items.map((item)=>{
-            return h('li',item)
-        })])
-    }
-})
+render(h){
+    let child = this.items.map(item=>{
+        return h('li',item)
+    })
+    console.log(child)
+    return h('ul', child)
+
+    // // 创建一个子元素
+    // let li1 = h('li','1')
+    // let li2 = h('li','2')
+    // let li3 = h('li','3')
+    // let li4 = h('li','4')
+    // // [li1] 是参数3，用来设置ul的子元素
+    // return h('ul',[li1,li2,li3,li4])
+}
 ```
 

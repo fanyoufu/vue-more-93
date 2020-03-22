@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <com-list></com-list>
+        <!-- <com2></com2> -->
+    </div>
+
+    <script>
+        Vue.component("com-list",{
+            data(){
+                return {
+                    items:[1,2,3,4]
+                }
+            },
+            // template:`<ul>
+            //     <li v-for="item in items">{{ item }}</li>
+            // </ul>`,
+            render(h){
+                let child = this.items.map(item=>{
+                    return h('li',item)
+                })
+                console.log(child)
+                return h('ul', child)
+                
+                // // 创建一个子元素
+                // let li1 = h('li','1')
+                // let li2 = h('li','2')
+                // let li3 = h('li','3')
+                // let li4 = h('li','4')
+                // // [li1] 是参数3，用来设置ul的子元素
+                // return h('ul',[li1,li2,li3,li4])
+            }
+        })
+
+        // Vue.component("com-list",{
+        //     data(){
+        //         return {
+        //             items:[1,2,3]
+        //         }
+        //     },
+        //     template:`<p v-if="items.length">
+        //         有{{items.length}}条数据
+        //         </p>
+        //         <p v-else>No items found.</p>` ,
+        //     render(h) {
+        //         // 在template 中可以用v-if
+        //         // 在render中不能用了
+        //         // return h('p',`有${this.items.length}条数据`)
+        //         if(this.items.length) {
+        //             return h('p',"有"+ this.items.length + "条数据")
+        //         } else {
+        //             return h('p','No items found.')
+        //         }
+        //     },
+        // })
+        Vue.component("com2",{
+            data(){
+                return {
+                    show: true
+                }
+            },
+            methods:{
+                hClick(){
+                    console.info("clicked")
+                }
+            },
+            template:`
+                    <div id="element" :class="{show:show}" @click="hClick">
+                        div的内容
+                    </div>`,
+            render(h){
+                return h('div',{
+                    class:{ 'show' : this.show},
+                    attrs:{
+                        id:'element'
+                    },
+                    on:{
+                        // click:function(){
+                        //     // this是window
+                        //     console.log(this)
+                        //     this.hClick()
+                        // },
+                        click:()=>{
+                            // this就是vue组件
+                            console.log(this)
+                            this.hClick()
+                        }
+                    }
+                    },'div的内容')
+            } 
+        })
+        
+        new Vue({
+            el:'#app'
+        })
+
+       
+    </script>
+</body>
+</html>

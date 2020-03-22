@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.11/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <com2></com2>
+    </div>
+
+    <script>
+        Vue.component("com2",{
+            data(){
+                return {
+                    show: true
+                }
+            },
+            methods:{
+                hClick(){
+                    console.info("clicked")
+                }
+            },
+            template:`
+                    <div id="element" :class="{show:show}" @click="hClick">
+                        div的内容
+                    </div>` 
+        })
+        // 注册全局组件
+        Vue.component('MyH1',{
+            // 用render改写template
+
+            render(h) {
+                // return h('h1','123')
+                return h('h1','456')
+            },
+            template:"<h1>123</h1>"
+        })
+
+        new Vue({
+            el:'#app'
+        })
+
+       
+    </script>
+</body>
+</html>
