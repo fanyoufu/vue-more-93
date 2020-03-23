@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        // Proxy:代理
+        // 功能是：在原对象的基础上，创建一个新对象（代理对象）。
+        // 通过对代理列表的自定义，来增加功能
+        var lige = {name:'lige',age:24}
+
+        // obj1称为是obj对象 的代理对象
+
+        // 需求是：age对外小5岁。 name对外是公开的。
+        // 
+        var xiaolong = new Proxy(lige,{
+            get:function(target,prop,receiver){
+                // 如果当前是获取属性操作(obj1.name)
+                // 则会进入get函数
+                // target就是原对象， prop.当前要获取的属性， receiver：当前的代理对象 obj1
+                console.log( target,prop,receiver )
+                // 返回当前要获取的那个属性值
+                // return 123;
+                // return obj[prop]
+                if(prop ==="name"){
+                    return  target[prop]
+                } else if(prop === "age"){
+                    return target[prop] - 5
+                }
+            },
+            set:function(target,prop,value ){
+                // 如果当前的操作是设置属性值，则会进入set函数中。
+                // target原对象, prop:当前要修改的属性名，value:当前要修改的属性值
+                console.log( target,prop,value  )
+                if(prop === 'age'){
+                    console.log('年龄不能改')
+                }
+                target[prop] = value
+
+            }
+        }) 
+    </script>
+</body>
+</html>

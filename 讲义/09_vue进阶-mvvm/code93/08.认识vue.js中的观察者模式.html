@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <script>
+        // 事件总线 EventBus
+        const app = new Vue();
+
+        // 添加一个观察者，对事件a感兴趣
+        app.$on('a',()=>{
+            console.log('a1')
+        })
+        // 添加一个观察者，对事件a感兴趣
+        app.$on('a',()=>{
+            console.log('a2')
+        })
+        // 添加一个观察者，对事件a感兴趣
+        app.$on('b',()=>{
+            console.log('b')
+        })
+
+        // 发布事件,事件名是a,所有的对a事件感兴趣的观察者都会执行
+        app.$emit("a"); 
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 定义 构造器
+        // 有一个属性： guanjia
+        // 有两个方法： $on, $emit
+        function EventCenter(){
+            // 定义一个事件管理中心
+            this.guanjia = {
+                // '事件名':[函数1，函数2]
+            }
+        }
+        // 向事件中心，添加一个观察者fn，它要观察 eventName 事件 
+        EventCenter.prototype.$on123 = function(eventName, fn) {
+            // eventName变量，要访问对应的属性，就要用[]
+            if(this.guanjia[eventName]){
+                // 如果这个事件已经在事件中心 注册过了,就直接push
+                this.guanjia[eventName].push(fn)
+            } else{
+                // 如果事件之前没有在事件中心 注册过了,就创建一个数组，把它放进去
+                this.guanjia[eventName] = [ fn ]
+            }
+        }
+        
+        // 发布事件，表示这个事件发生，所有观察这个事件的观察者都要执行
+        EventCenter.prototype.$emit = function(eventName) {
+            // this.guanjia[eventName] // 得到一个数组
+            // console.log(eventName )
+            // console.log(this.guanjia)
+            // console.log(this.guanjia[eventName] )
+            this.guanjia[eventName].forEach(fn => {
+                fn()
+            })
+        }
+        
+        // -----------上面完整实现了观察者模式----------------------
+
+        const app = new EventCenter();
+
+        // 添加一个观察者，对事件haqie感兴趣
+        app.$on123('haqie',()=>{
+            console.log('小王，给哥上茶')
+        })
+        // 添加一个观察者，对事件haqie感兴趣
+        app.$on123('haqie',()=>{
+            console.log('小张，给哥上蜂蜜')
+        })
+        // 添加一个观察者，对事件qishen感兴趣
+        app.$on123('qishen',()=>{
+            console.log('小吴，给哥穿衣服')
+        })
+
+        // 发布事件,事件名是qishen,所有的对qishen事件感兴趣的观察者都会执行
+        // 会输出什么？
+        app.$emit("qishen"); 
+    </script>
+</body>
+</html>

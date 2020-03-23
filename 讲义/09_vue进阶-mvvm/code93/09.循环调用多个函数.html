@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function fan1(){
+            console.log('我要给娟娟送coffee')
+        }
+
+        function fan2(){
+            console.log('我要给娟娟送蜂蜜')
+        }
+
+        function fan3(){
+            console.log('我要给娟娟送毛毯')
+        }
+
+        // 数组
+        // 数组中的元素 竟然是 函数 
+        var arr = [fan1,fan2]
+
+        // 添加一个元素到数组中，也是一个函数
+        arr.push(fan3)
+
+        arr.push(()=>{
+            console.log('送给娟娟一枝铅笔')
+        })
+
+        // 对数组进行循环，取出数组元素，并依次执行
+        arr.forEach(fn => {
+            // fn 就是数组元素，就是函数
+            fn()
+        })
+
+        // fan1()
+        // fan2()
+        // fan3()
+
+       
+
+    </script>
+</body>
+</html>

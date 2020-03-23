@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var obj = {
+            a:1,b:2
+        }
+        // 给obj添加一个代理对象，如果访问的属性不存在，则直接报错
+
+        let obj1 = new Proxy(obj,{
+            get:function(target,prop){
+                // 如果prop在target存在，则返回值
+                // 否则就，报错
+
+                // console.log( target,prop )
+                // 判断prop在target中是否找到
+                if( prop in target){
+                    return target[prop]
+                }else {
+                    console.log('你访问的'+prop+'不存在')
+                }
+                 
+            }
+        })
+
+        // console.log(obj.c)
+         console.log(obj1.c)
+
+        
+    </script>
+</body>
+</html>

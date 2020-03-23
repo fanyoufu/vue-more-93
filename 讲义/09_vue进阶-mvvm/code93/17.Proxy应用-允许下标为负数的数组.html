@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        var arr =[1,2,3,4];
+        // 如果我们希望数组可以取负值下表，且规则如下：
+
+        // -n表示倒数第n个元素。
+        // 例如：arr[-1]表示数组arr中的倒数第一个元素。
+        // -1: 倒数第一个元素, 下标：arr.length + (-1)
+        // -2：倒数第二个元素, 下标：arr.length + (-2)
+
+        var arr1 = new Proxy(arr,{
+            get:function(target,prop){
+                // target原对象 arr。
+                // prop:当前访问的下标。 
+                // console.log(target,prop)
+                // 把 "-1" ---> -1
+                let idx = Number(prop)
+                if(idx < 0) {
+                    idx = target.length + idx
+                } 
+                return target[idx]
+                // todo: 如果数组越界，给出提示
+
+            }
+        })
+
+        console.log(arr1[-1])
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 当某个特定的事件，执行多个函数 -->
+    <script>
+        // 雷哥：
+        //    起身  ： 小王，小张
+        //    摆手  ： 小于
+        //    哈欠  ： 小龙 
+
+        // 定义观察者
+        function xiaowang(){
+            console.log('雷哥起身，小王给雷哥 披外套')
+        }
+        function xiaozhang(){
+            console.log('雷哥起身，小张给雷哥 拉凳子')
+        }
+        function xiaoyu(){
+            console.log('雷哥摆手，小于给雷哥 上烟')
+        }
+        function xiaolong(){
+            console.log('雷哥哈欠，小龙给雷哥 上coffee')
+        }
+    
+        // 管家，分配任务
+        // 定义一个对象，属性名就是事件，属性值就是数组，数组中每一个元素还是一个函数
+        let guangjia = {
+            'qishen':[xiaowang, xiaozhang],
+            'bashou':[xiaoyu],
+            'haqie':[xiaolong],
+        }
+
+        // 来个新fans,小吴 在 哈欠 ，递蜂蜜
+        guangjia.haqie.push(function xiaowu(){
+            console.log('我是新人，我要上蜂蜜')
+        })
+
+        // 雷哥 起身
+        // guangjia.qishen.forEach(fn => {
+        //     fn()
+        // })
+        // 雷哥 哈欠
+        guangjia.haqie.forEach(fn => {
+            fn()
+        })
+        
+    </script>
+</body>
+</html>

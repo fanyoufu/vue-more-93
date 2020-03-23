@@ -1,23 +1,21 @@
-# ES6之proxy
+# ES6之Proxy
 
-
+vue3.x将会用Proxy来代替Object.defineProperty。
 
 ## 是什么
 
-Proxy是一个构造器。通过new Proxy(原对象,{代理列表})的方式去创建对象,创建的这个对象我们称之为代理对象。
+Proxy是一个构造器。通过`new Proxy(原对象,{代理列表})`的方式去创建对象,创建的这个对象我们称之为代理对象。
 
 即：
 
 > 代理对象 = new Proxy(原对象,{代理列表})
 
-之所以要额外产生这么一个代理对象，好处在于可以保持原对象不变，在代理对象中添加新的功能，或者是改造某些功能。而这个原对象则可以在适当的时机回滚回去。可以与设计模式中的代理模式对比理解。
-
-
+之所以要额外产生这么一个代理对象，好处在于可以保持原对象不变，在代理对象中添加新的功能，或者是改造某些功能。
 
 ## 使用格式
 
-```
-var obj;
+```javascript
+var obj={};
 var proxyObj = new Proxy(obj, {
   对obj的操作1: 函数1，
   对obj的操作2: 函数2，
@@ -37,8 +35,8 @@ var obj = {name:'obj',age:34}
 console.info(obj.name)
 
 var proxyObj = new Proxy(obj,{
-  get:function(target,key,receiver){
-      console.info(target,key,receiver);
+  get:function(target,prop,receiver){
+      console.info(target,prop,receiver);
       return 'no'
   }
 })
@@ -49,8 +47,8 @@ console.info(proxyObj.abc)
 
 解释如下：
 
-- proxxy对象是在obj对象的基础之上创建的一个新对象。
-- get函数中的三个参数：target,key,receiver。 target就是原对象j,keys是当前的属性名；receiver是代理对象。你可以在get方法中做任意的自定义的处理。
+- proxy对象是在obj对象的基础之上创建的一个新对象。
+- get函数中的三个参数：target,prop,receiver。 target就是原对象obj,prop是当前的属性名；receiver是代理对象。你可以在get方法中做任意的自定义的处理。
 
 - proxyObj.name是要去获取proxy对象的name属性。`.操作符会自动去调用get()方法`。
 
@@ -128,7 +126,7 @@ proxyArr.__proto__ === arr.__proto__ === Array.prototype
 ```javascript
 var proxyObj = new Proxy(obj, {
   get: function(tagert,key,receiver){},
-  set: function(tagert,key,receiver){},
+  set: function(tagert,key,value){},
   has: function(tagert,key){},
   deleteProperty: function(tagert,key){},
   ownKeys: function(tagert){},
@@ -149,24 +147,35 @@ var proxyObj = new Proxy(obj, {
 
 ### 访问不存在的属性名时给出更加优雅的提示
 
+在我们写js代码的过程中，最容易遇到的是错误是：访问一个对象不存在的属性。而这个时候js代码是不报错的，它只会返回一个undefined.
 
 
-```
-const con = {
- COMPANYNAME:"jd",
+
+需求：访问对象的属性时，如果这个属性不存在，则报出一个错误提示
+
+```javascript
+var obj = {
+    a:1,b:2
 }
+// 给obj添加一个代理对象，如果访问的属性不存在，则直接报错
 
-let proxyConst = new Proxy(con, {
-  get: function (target, key, receiver) {
-    if(key in target)
-    	return target[key];
-    else{
-      throw new Error("error:常量名"+key+"不存在！")
+let obj1 = new Proxy(obj,{
+    get:function(target,prop){
+        // 如果prop在target存在，则返回值
+        // 否则就，报错
+        console.log( target,prop )
+        // 判断prop在target中是否找到
+        if( prop in target){
+            return target[prop]
+        }else {
+            console.log('你访问的'+prop+'不存在')
+        }
+
     }
-  }
+})
 
-});
-
+// console.log(obj.c)
+console.log(obj1.c)
 ```
 
 
@@ -196,31 +205,30 @@ console.info(arr[100]) // undefined
 可以使用Proxy解决如下：
 
 ```javascript
-var arr = [1,2,3];
-var proxyArr = new Proxy(arr,{
-  get: (target,prop)=>{
-    let index = Number(prop);
-    if(index < 0){
-      prop = target.length + index;
+var arr =[1,2,3,4];
+// 如果我们希望数组可以取负值下表，且规则如下：
+
+// -n表示倒数第n个元素。
+// 例如：arr[-1]表示数组arr中的倒数第一个元素。
+// -1: 倒数第一个元素, 下标：arr.length + (-1)
+// -2：倒数第二个元素, 下标：arr.length + (-2)
+
+var arr1 = new Proxy(arr,{
+    get:function(target,prop){
+        // target原对象 arr。
+        // prop:当前访问的下标。 
+        // console.log(target,prop)
+        // 把 "-1" ---> -1
+        let idx = Number(prop)
+        if(idx < 0) {
+            idx = target.length + idx
+        } 
+        return target[idx]
+        // todo: 如果数组越界，给出提示
+
     }
-    return target[prop];
-  }
 })
 
-console.info(arr[-1]);   // undefined
-
-console.info(proxyArr[-1]); // 3
+console.log(arr1[-1])
 ```
-
-
-
-注意：
-
-- Number()可以把传入的值转成数值型。非数值 --> NaN;
-
-- 如果是proxyArr.push(3)，由于此时的prop是'push',所以不会进入if分支。
-
-- 如果是proxyArr[-1],此时的prop是'-1',所以会进入到if分支：把prop从-1改成 2 ,从而实现了被代理的效果。
-
-- 此时，完全可以把proxyArr当作一个数组来使用，sort,push等方法均可以调用。Array.isArray(proxyArr) === true
 

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <script src="./vue.js"></script> -->
+</head>
+
+<body>
+    <!-- 视图 V -->
+    <div id="app">
+        <h2 v-html="salary"></h2>
+        <input type="text" v-model="salary">
+        <p v-html="salary"></p>
+        <h3 v-html="salary"></h3>
+    </div>
+    <script>
+        // 手写代码实现MVVM的功能，目标与Vue实现的效果在本例中一致
+        function MVVM(options){
+            // 用解构赋值，快速取出数据
+            let {el, data} = options
+            console.log(el, data)
+            // 在构造器的内部，this的值是实例对象
+            for( let  key in data) {
+                // 数据拦截
+                // 所有通过vm.XXX访问的属性，本质上就是在访问 options.data.XXX
+                Object.defineProperty(this,key,{
+                    get(){
+                        return data[key]
+                    },
+                    set(val){
+                        data[key] = val
+                    }
+                })
+            }
+            // console.log( "this.salary", this.salary)
+            // 模板编译（分析）,把v-html,v-model的值显示出来
+            // 取出el表示的根结点下的所有子元素
+            var rootDom = document.querySelector(el);
+            // 通过children获取所有子元素集合：它是一个伪数组。
+            // Array.from()把它转成数组
+            Array.from(rootDom.children).forEach((node)=>{
+                // 分析每个子节点是否包含v-html,v-model属性
+                // dom结点.hasAttribute('属性名'). 如果有，则返回true；否则就是false
+                if( node.hasAttribute('v-html') ){
+                    // 则应该把 v-html的属性值 'salary' 取出来，显示在这个结点中。
+                    // 如何获取一个名为v-html的属性值？
+                    var attVal = node.getAttribute('v-html')
+                    // attVal是一个变量名，不能通过this.attVal来访问，只能通过[]来访问
+                    console.log(attVal, this[attVal])
+
+                    // 把一个名为attVal的属性值，显示在这dom节点上
+                    node.innerHTML = this[attVal]
+                }
+                else if(node.hasAttribute('v-model') ){
+                    // 则应该把 v-model的属性值 'salary' 取出来，显示在这个结点中。
+                    // 如何获取一个名为v-model的属性值？
+                    var attVal = node.getAttribute('v-model')
+                    // attVal是一个变量名，不能通过this.attVal来访问，只能通过[]来访问
+                    console.log(attVal, this[attVal])
+
+                    // 把一个名为attVal的属性值，显示在这dom节点上
+                    // 当前dom是input框，设置初始值要用value属性
+                    node.value = this[attVal]
+                }
+            
+            })
+        }
+
+    </script>
+
+
+    <script type="text/javascript">
+        // 数据 M
+        var data = {
+            salary: 15000,
+            money:3000
+        }
+
+        // VM. 
+        // 在构造器的内部，this的就指向实例对象。
+        var vm = new MVVM({
+            el: "#app",
+            data:data
+        })
+        
+        console.log( vm.salary )
+    </script>
+</body>
+
+</html>
