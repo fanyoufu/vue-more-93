@@ -56,7 +56,7 @@ npm init --yes
 npm i nuxt
 ```
 
-
+这个包很大，要有耐心。
 
 ### 创建第一个页面
 
@@ -66,19 +66,20 @@ npm i nuxt
 
 ```javascript
 <template>
-	<div>
-		<h1>{{title}}</h1>
-	</div>
+    <div>
+        <h1>{{title}}</h1>
+    </div>
 </template>
 
 <script>
-	export default {
-		data(){
-			return {
-				title:"hello nuxt"
-			}
-		}
-	}
+    export default {
+        name: 'Index',
+        data() {
+            return {
+                title:'我的第一个nuxt.js网页'
+            }
+        }
+    }
 </script>
 ```
 
@@ -128,9 +129,17 @@ npm i nuxt
 >
 > 2. npm run serve 的含义是去运行node_modules下nuxt包中的代码。
 
-
+![image-20200325142817295](asset/image-20200325142817295.png)
 
 如果没有什么错误，你应该可以在`localhost:3000`中看到代码运行的效果了。
+
+
+
+#### 说明
+
+获取到的内容包含数据
+
+![image-20200325143524204](asset/image-20200325143524204.png)
 
 ### 创建第二个页面
 
@@ -163,11 +172,14 @@ npm i nuxt
  - next-link 用来进行页面跳转。
  - 在地址栏中输入http://localhost:3000/page1来访问这个页面
 
+![image-20200325143752478](asset/image-20200325143752478.png)
+
 ### 小结
 
 - 项目中只有一个包nuxt，而其它的vue,vue-router,webpack等都集成了。
 - 页面全写在pages目录下。
 - 不需要额外去设计路由。
+- 是单页的：路由跳转，页面是不会刷新
 
 ## 认识单页应用和服务端渲染
 
@@ -195,8 +207,8 @@ npm i nuxt
 
 在我们前面学习的vue项目中，都是在客户端渲染：
 
-- 页面（不带数据的）取回来
-- 再发ajax去求接口，再渲染数据
+- 先把页面（不带数据的）取回来
+- 再发ajax去求接口，获取数据，在浏览器端渲染数据
 
 
 
@@ -214,7 +226,11 @@ npm i nuxt
 
 共两步：
 
-1. 安装axios包，用来请求接口数据。
+1. 安装axios包，用来发请求，求接口数据。
+
+   ```
+   npm i axios
+   ```
 
 2. 在page1.vue中改写代码如下。
 
@@ -253,7 +269,9 @@ npm i nuxt
 </script>
 ```
 
-​	3. 运行代码。并在浏览器中观察数据的请求来源。
+ 3. 运行代码。并在浏览器中观察数据的请求来源。
+
+    created中的代码是会在浏览器发出ajax请求的。
 
 > 其它测试用的接口也可以使用的。
 >
@@ -263,11 +281,11 @@ npm i nuxt
 
 #### 特点
 
-- asyncData是Nuxt中额外增加的 vue 生命周期的钩子函数。在这个钩子函数中，代码可以在服务端执行。
+- asyncData是Nuxt中额外增加的 **vue 生命周期的钩子函数**。在这个钩子函数中，代码可以在服务端执行。
 
 - 没有 Vue 实例的 this，this 指向 undefined
 
-- 获取到的数据，以对象格式返回，并最终会附加到vue组件的data数据项中。
+- **发请求，以获取数据，数据要求以对象格式返回，并最终会附加到vue组件的data数据项中，可以正常在template中使用**。
 
   ```javascript
   <template>
@@ -301,9 +319,11 @@ npm i nuxt
 
   上例是获取同步数据。
 
-
-
 #### 获取接口数据
+
+目标：
+
+在asyncData钩子函数中，去发ajax请求，获取数据。
 
 ```js
 <template>
@@ -339,18 +359,13 @@ npm i nuxt
 			let res = await  axios( {method:"get", url:'http://www.liulongbin.top:3006/api/news'})
 			console.log( res.data.data )
 			return {newList: res.data.data}
-		} ,
-		created() {
-			axios( {method:"get", url:'http://www.liulongbin.top:3006/api/getbooks'}).then(res=>{
-				this.list = res.data.data
-				console.log(res.data.data);
-			})
-		}
+		} 
 	}
 </script>
 ```
 
-
+- asyncData 它是一个特殊的钩子函数，它可以在服务器端运行。
+- 上面的代码中，产生出页面就已经有数据了，不像在created中的代码是会在浏览器发出ajax请求的。
 
 ### 同构
 
@@ -366,31 +381,19 @@ npm i nuxt
 
 ## 生命周期
 
-![image-20200224151503678](asset/image-20200224151503678.png)
+### 在服务器端执行
 
-
-
-
-
-```javascript
-beforeCreate
-created
-beforeMount
-mounted
-
-```
-
-
-
-在服务器端执行：
+按如下顺序执行这三个钩子
 
 - asyncData
 - **beforeCreate**
 - **created**
 
-在客户器端执行：
+### 在客户器端执行
 
-- asyncData 只在路由切换时
+vue的中的钩子函数正常执行。
+
+- `asyncData 也会执行：只在路由切换时`
 - **beforeCreate**
 - **created**
 - beforeMount
@@ -399,7 +402,13 @@ mounted
 - updated
 - ......
 
-发请求的操作：
+重点：
+
+- asyncData在不同的时机，可以在服务器和浏览器都执行。
+
+![image-20200224151503678](asset/image-20200224151503678.png)
+
+发请求取数据的操作：
 
 - 如果 需要SEO，写在asyncData中
 - 如果不需要SEO，则可以写到mounted中，
