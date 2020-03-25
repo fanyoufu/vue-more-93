@@ -45,9 +45,12 @@
             // console.log(eventName )
             // console.log(this.guanjia)
             // console.log(this.guanjia[eventName] )
-            this.guanjia[eventName].forEach(fn => {
-                fn()
-            })
+            console.log('发布一个'+eventName+'消息')
+            if( this.guanjia[eventName] ){
+                this.guanjia[eventName].forEach(fn => {
+                    fn()
+                })
+            }
         }
     </script>
 
@@ -70,6 +73,7 @@
                         return data[key]
                     },
                     set(val){
+                        console.log("赋值操作，修改对象的的属性",val)
                         data[key] = val
 
                         // 发布事件，它会去执行所有的这个事件的观察者的代码
@@ -99,10 +103,11 @@
 
                     // 在这个结点添加观察者
                     // em.$on('事件名','执行的函数')
-                    em.$on(attVal,()=>{
-                        // 更新当前结点innerHTML
-                        node.innerHTML = this[attVal]
-                    })
+                    // em.$on(attVal,()=>{
+                    //     console.log('执行v-html观察者')
+                    //     // 更新当前结点innerHTML
+                    //     node.innerHTML = this[attVal]
+                    // })
                 }
                 else if(node.hasAttribute('v-model') ){
                     // 则应该把 v-model的属性值 'salary' 取出来，显示在这个结点中。
@@ -116,9 +121,10 @@
                     node.value = this[attVal]
 
                     // 添加观察者
-                    em.$on(attVal,()=>{
-                        node.value = this[attVal]
-                    })
+                    // em.$on(attVal,()=>{
+                    //     console.log('执行v-model观察者')
+                    //     node.value = this[attVal]
+                    // })
 
                     // 给input框添加input事件，
                     node.addEventListener('input',(e)=>{

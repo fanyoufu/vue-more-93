@@ -1,4 +1,4 @@
-
+**选学内容**
 
 ## RealWorld 基本介绍
 
@@ -70,31 +70,36 @@ npm i -g create-nuxt-app
 
 ## 目录结构
 
-components:组件。其下的组件没有
+```
+|-components:组件
+|-layouts:布局
+|-middleware: 中间件目录
+|-pages：页面。其下的.vue中才有asyncData钩子
+|-plugins:插件。
+|-static:静态资源
+|-store: 写vuex的地方 
+|-nuxt.config.js：配置文件
+|-api: 补充一个接口定义文件夹
+|-utils:补充一个工具文件夹
+```
 
-layouts:布局。
 
-middleware: 中间件目录
-
-pages：页面。其下的.vue中才有asyncData钩子
-
-plugins:插件。
-
-static:静态资源
-
-store: vuex 
-
-nuxt.config.js
-
-api: 补充一个接口定义文件夹
-
-utils:补充一个工具文件夹
 
 ## 自定义页面
+
+nuxt.js框架中定义的每一个页面的最后效果可以由三个部分叠加而成，以index.vue为例：
+
+- 全局html模板:app.html
+- 布局模板：layouts/default.vue
+- 页面：index.vue
+
+最后得到的效果： `index.vue + layouts/default.vue + app.html`
 
 <img src="asset/image-20200222163854520.png" alt="image-20200222163854520" style="zoom:50%;" />
 
 ### 在根目录中添加app.html
+
+先简单填入一些内容。重点是`{{APP}}`
 
 <img src="asset/image-20200222161915732.png" alt="image-20200222161915732" style="zoom:50%;" />
 
@@ -274,6 +279,12 @@ layouts是布局的意思，其下的default.vue是整个页面的默认布局�
 此时，再来看主页的运行效果如下：
 
 ![image-20200222163010580](asset/image-20200222163010580.png)
+
+### 小结
+
+在创建主页的过程中，大家可以体会一下nuxt.js框架中提供的页面模板的能力。
+
+
 
 ## 快速完成其它页面的布局
 
@@ -465,7 +476,7 @@ export default {
 
 以上代码在[这里](https://github.com/gothinkster/realworld-starter-kit/blob/master/FRONTEND_INSTRUCTIONS.md#profile)复制
 
-### 编辑新建文章
+### 编辑/新建文章
 
 在pages下新建editor.vue，其内容如下：
 
@@ -644,17 +655,15 @@ export default {
 
 
 
-## 主页-获取文章列表
+## 功能开发：主页-获取文章列表
 
 功能目标：
 
-- 发请求，获取文章列表，并显示
+- 在主页中，发请求，获取文章列表，并显示
 
 技能点：
 
 - [nuxt中的axios](https://axios.nuxtjs.org/usage)
-
-
 
 接口说明：
 
@@ -673,17 +682,6 @@ const request = axios.create({
   baseURL: 'https://conduit.productionready.io'
 })
 
-// request.interceptors.request.use((config) => {
-//   // Do something before request is sent
-//   const { user } = store.state
-//   if (user) {
-//     config.headers.Authorization = `Token ${user.token}`
-//   }
-//   return config
-// }, (error) => {
-//   // Do something with request error
-//   return Promise.reject(error)
-// })
 
 export default request
 ```
@@ -720,8 +718,6 @@ export const getArticle = (slug) => {
 }
 
 ```
-
-
 
 
 
@@ -803,11 +799,9 @@ export default {
 
 <img src="asset/image-20200222174540936.png" alt="image-20200222174540936" style="zoom:33%;" />
 
-## 注册
+## 功能开发：注册
 
 ### 接口功能封装
-
-
 
 创建`api/user.js`文件，根据[接口](https://github.com/gothinkster/realworld/tree/master/api#registration)文档的约定,内容如下：
 
@@ -1671,10 +1665,6 @@ methods: {
 
 
 
-1
-
-
-
 ## 处理刷新vuex丢失问题
 
 如果在主页中刷新一次页面，则会出现vuex丢失的问题：由于vuex数据是保存在前端页面上的，页面刷新后数据肯定会丢失，这就涉及vuex中数据做持久化的问题。
@@ -1685,53 +1675,115 @@ methods: {
 - 获取用户信息之后，保存在localstorage中。
 - 随后刷新页面，还能在初始化vuex是就直接从本地localstorage中取到。
 
-但是，在nuxt中的，初始化vuex是在服务器端完成的。所以，在实始化vuex时，是无法获取到localstorge的。
+但是，在nuxt中，有一些代码是需要在服务器端执行的，如果只把vuex保存在localstorage中，后端代码无法及时获取vuex的。
 
-具体举个例子：以article/xxxx这个页面为例。
+以article/xxxx这个页面为例举个例子。
 
-在服务器端，先要执行asyncData以获取数据，然后，再来渲染页面。而在asyncData这个钩子函数中，是无法获取客户端的任何信息的。
+当用户刷新页面时，在服务器端，先要执行asyncData以获取数据，然后，再来渲染页面。而在asyncData这个钩子函数中，是无法获取客户端的任何信息的。
 
-### 添加数据容器
+思路：
 
-在后端使用token数据 
+- 把用户（token....)信息保存在cookie中。
+- 由于信息保存在cookie中
+  - 页面刷新，cookie信息不会丢失
+  - 页面刷新时，所发出的请求会自动携带cookie。这样就可以把用户信息传递给后端服务器了。
 
-添加store/index.js
+### 由于要用到cookie,所以先安装两个包
 
-```javascript
-import Vuex from 'vuex'
+```
+npm i cookieparser js-cookie 
+```
 
-const cookieparser = process.server ? require('cookieparser') : undefined
+cookieparser:在服务器端解析cookie
 
-// 在nuxt中，store是一个函数。
-const createStore = () => {
-  return new Vuex.Store({
-    state: () => ({
-      user: null
-    }),
-    mutations: {
-      setUser (state, user) {
-        state.user = user
-      }
-    },
-    actions: {
-    // 是nuxtjs中额外提供的api,专门用来在服务器渲染来填充vuex数据容器的。
-      nuxtServerInit ({ commit }, { req }) {
-        let user = null
-        if (req.headers.cookie) {
-          const parsed = cookieparser.parse(req.headers.cookie)
-          console.log(parsed)
-          try {
-            user = JSON.parse(parsed.user)
-          } catch (err) {
-            // No valid cookie found
+js-cookie :在浏览器设置cookie
+
+### 在login.vue 设置cookie
+
+- const Cookie = require('js-cookie')
+- // 登陆成功，本地设置cookie
+
+```
+<script>
+import { login } from '@/api/user'
+const Cookie = require('js-cookie')
+export default {
+  data () {
+    return {
+      user: {
+        email: 'hello12345qweasd@qq.com',
+        password: 'hello12345qweasd'
+      },
+      errArr: []
+    }
+  },
+  methods: {
+    async hLogin () {
+      // 清空错误信息
+      this.errArr = []
+
+      try {
+        // 登陆成功之后，会返回用户信息
+        const { data } = await login({
+          user: this.user
+        })
+
+        console.log(this.$store)
+
+        // 把用户数据保存在vuex中
+        this.$store.commit('setUser', data.user)
+
+        // 登陆成功，本地设置cookie
+        Cookie.set('user', data.user)
+
+        this.$router.push('/')
+      } catch (err) {
+        // 这个操作出错，不一定是后端接口返回的错误信息，还可能是本地网络问题
+        // 注册出错了
+        const { response } = err
+        if (response && response.data) {
+          // 收到后端接口返回的注册错误信息
+          const errObj = response.data.errors
+          for (const key in errObj) {
+            console.log(errObj[key][0])
+            this.errArr.push(`${key}: ${errObj[key][0]}`)
           }
         }
-        commit('setUser', user)
+        console.dir(err)
       }
     }
-  })
+  }
 }
-export default createStore
+</script>
+```
+
+[![image-20200229173011799](https://github.com/fanyoufu/vuemore92/raw/master/%E8%AE%B2%E4%B9%89/asset/image-20200229173011799.png)](https://github.com/fanyoufu/vuemore92/blob/master/讲义/asset/image-20200229173011799.png)
+
+### 在后端使用cookie数据设置vuex
+
+添加store/actions.js
+
+```
+//  process.server  是nuxt.js提供的，用来判断是不是在服务器端
+const cookieparser = process.server ? require('cookieparser') : undefined
+export default {
+  // 是nuxtjs中额外提供的api,专门用来在服务器渲染来填充vuex数据容器的。
+  // 取取浏览器传过来的cookie
+  nuxtServerInit ({ commit }, { req }) {
+    console.log('.................nuxtServerInit')
+    let user = null
+    if (req.headers.cookie) {
+      const parsed = cookieparser.parse(req.headers.cookie)
+      console.log(parsed)
+      try {
+        user = JSON.parse(parsed.user)
+      } catch (err) {
+        // No valid cookie found
+      }
+    }
+    commit('setUser', user)
+  }
+}
 ```
 
 

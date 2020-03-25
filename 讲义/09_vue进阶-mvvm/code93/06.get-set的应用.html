@@ -8,6 +8,7 @@
 <body>
     <div>
         <span id="span">1000</span>
+        <div id="div">1000</div>
     </div>
     <script>
         // 实现目标是：当我通过代码 obj.money = 20000时，
@@ -30,6 +31,7 @@
                 _money = val
                 // 去修改视图
                 document.getElementById('span').innerHTML = val
+                document.getElementById('div').innerHTML = val
             }
         })
     </script>
